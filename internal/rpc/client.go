@@ -84,7 +84,7 @@ func (c *Client) GetTransaction(ctx context.Context, hash string) (*TransactionR
 	tx, err := c.Horizon.TransactionDetail(hash)
 	if err != nil {
 		logger.Logger.Error("Failed to fetch transaction", "hash", hash, "error", err)
-		return nil, errors.WrapTransactionNotFound(err)
+		return nil, errors.Wrap(errors.ErrTransactionNotFound, "%w", err)
 	}
 
 	logger.Logger.Info("Transaction fetched successfully", "hash", hash, "envelope_size", len(tx.EnvelopeXdr))
