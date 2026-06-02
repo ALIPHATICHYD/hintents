@@ -349,4 +349,25 @@ mod tests {
         let type_section = TypeSection::parse(&wasm).unwrap();
         assert!(type_section.get_signature(10).is_none());
     }
+
+    #[test]
+    fn test_type_section_parse_empty_module_has_zero_types() {
+        let wasm = wat::parse_str(r#"(module)"#).unwrap();
+        let type_section = TypeSection::parse(&wasm).unwrap();
+        assert_eq!(type_section.len(), 0);
+        assert!(type_section.is_empty());
+    }
+
+    #[test]
+    fn test_type_section_parse_module_with_empty_type_section() {
+        // Explicit empty type section should not cause out-of-bounds or panics
+        let wasm = wat::parse_str(r#"(module (type (func)))"#).unwrap();
+        let type_section = TypeSection::parse(&wasm).unwrap();
+
+        // This module declares a single (func) type with no params/results
+        assert_eq!(type_section.len(), 1);
+        let sig = type_section.get_signature(0).unwrap();
+        assert!(sig.params.is_empty());
+        assert!(sig.results.is_empty());
+    }
 }
